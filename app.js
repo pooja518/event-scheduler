@@ -22,6 +22,7 @@ const saltRounds = 10;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser("shh! some secret string"));
 app.use(csrf("this_should_be_32_character_long", ["POST", "PUT", "DELETE"]));
 app.use(flash());
@@ -116,12 +117,28 @@ app.get("/signout", (req, res) => {
   });
    
 
-app.get("/event",(req,res)=> {
+app.get("/event",connectEnsureLogin.ensureLoggedIn(),(req,res)=> {
   res.render('event',{
     title: "Schedule an event",
     csrfToken: req.csrfToken()
   })
 })
+
+app.get('/destination', async (req, res) => {
+  // Logic for the destination page goes here
+  try{
+    const events = await Event.fetchAllEvents();
+    res.render('destination',{
+      title: "Events",
+      data: events,
+      csrfToken: req.csrfToken()
+    });
+  }
+  catch (err) {
+    console.log(err);
+    return res.send("No events to display");
+  }
+});
 
 app.post("/users", async (req, res) => {
   if (req.body.firstName.length == 0) {
@@ -207,13 +224,14 @@ app.post('/create-event',connectEnsureLogin.ensureLoggedIn(), async (req, res) =
     });
 
     // Respond with the newly created event
-    res.status(201).json(newEvent);
+    res.redirect("/destination")
   } catch (error) {
     // Handle database errors
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 module.exports = app;

@@ -1,0 +1,10 @@
+<% for(var i=0;i<data.length;i++) { %>
+    <div class="relative w-full max-w-lg bg-white shadow-md rounded p-6 mb-4">
+      <h2 class="text-lg font-semibold mb-4"><%= data[i].name %></h2>
+      <p class="text-gray-700 mb-2"><%= data[i].description %></p>
+      <p class="text-gray-700 mb-2">Date: <%= new Date(data[i].date).toDateString() %></p>
+      <p class="text-gray-700 mb-2 font-semibold">Number of Participants: <%= data[i].no_of_participants %></p>
+      <p class="text-gray-700 mb-2 font-semibold">Event Venue: <%= data[i].venue %></p>
+      
+    </div>
+  <% } %>

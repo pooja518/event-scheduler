@@ -15,6 +15,13 @@ module.exports = (sequelize, DataTypes) => {
       })
       // define association here
     }
+    static fetchAllEvents(){
+      const events = this.findAll()
+      return events;
+    }
+    setCompletionStatus(status){
+      return this.update({no_of_participants : status});
+    }
   }
   Event.init({
     name: DataTypes.STRING,
