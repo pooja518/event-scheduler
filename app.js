@@ -6,7 +6,7 @@ const path = require("path");
 var csrf = require("tiny-csrf");
 var cookeParser = require("cookie-parser");
 
-const { User } = require("./models");
+const { Event,User } = require("./models");
 const cookieParser = require("cookie-parser");
 
 const passport = require("passport");
@@ -60,7 +60,7 @@ passport.use(
             }
           })
           .catch((error) => {
-            return done(err);
+            return done(error);
           });
       }
     )
@@ -115,11 +115,13 @@ app.get("/signout", (req, res) => {
     });
   });
    
-app.get("/first", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
-  res.render("first", {
-    firstName: req.user.firstName,
-  });
-});
+
+app.get("/event",(req,res)=> {
+  res.render('event',{
+    title: "Schedule an event",
+    csrfToken: req.csrfToken()
+  })
+})
 
 app.post("/users", async (req, res) => {
   if (req.body.firstName.length == 0) {
@@ -155,7 +157,7 @@ app.post("/users", async (req, res) => {
       } else {
         req.flash("success", "sign up successfull");
       }
-      res.redirect("/first");
+      res.redirect("/event");
     });
   } catch (err) {
     console.log(err);
@@ -171,8 +173,47 @@ app.post(
     failureFlash: true,
   }),
   (req, res) => {
-    res.redirect("/first");
+    res.redirect("/event");
   }
 );
+
+var no_of_participants = 0;
+// POST endpoint to create a new event and associate it with a user
+app.post('/create-event',connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+  const { eventName, eventDescription, eventDate, participants, eventVenue} = req.body;
+  console.log(eventName, eventDescription, eventDate, participants, eventVenue);
+  const userId = req.user.id;
+  if (!eventName || !eventDescription || !eventDate || !participants || !eventVenue) {
+    req.flash("error", "Fill all the details");
+    return res.redirect("/event");
+  }
+
+  try {
+    // Check if the user exists
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Create a new event associated with the user
+    const newEvent = await Event.create({
+      name: req.body.eventName,
+      description: req.body.eventDescription,
+      date: req.body.eventDate,
+      no_of_participants,
+      capacity: req.body.participants,
+      venue: req.body.eventVenue,
+      userId: userId,
+    });
+
+    // Respond with the newly created event
+    res.status(201).json(newEvent);
+  } catch (error) {
+    // Handle database errors
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 module.exports = app;
