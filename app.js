@@ -162,9 +162,10 @@ app.get("/update/:id",connectEnsureLogin.ensureLoggedIn(), async(req,res)=> {
   const rawDate = event.date // Replace this with your actual date object
   const formattedDate = new Date(rawDate.getTime() - rawDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   try{
-    console.log(event.description,event.name,event.capacity,event.venue,event.date)
+    //console.log(event.description,event.name,event.capacity,event.venue,event.date)
     res.render('update',{
       title: "Update Event",
+      id: event.id,
       name: event.name,
       description: event.description,
       capacity: event.capacity,
@@ -288,6 +289,49 @@ app.post(
     }
   }
 );
+
+app.post("/updated/:id",connectEnsureLogin.ensureLoggedIn(),async (req,res)=> {
+  const { eventName, eventDescription, eventDate, participants, eventVenue } =
+      req.body;
+    console.log(
+      eventName,
+      eventDescription,
+      eventDate,
+      participants,
+      eventVenue
+    );
+    const userId = req.user.id;
+    if (
+      !eventName ||
+      !eventDescription ||
+      !eventDate ||
+      !participants ||
+      !eventVenue
+    ) {
+      req.flash("error", "Fill all the details");
+      return res.redirect("/update");
+    }
+
+      // Create a new event associated with the user
+      try{
+      const newEvent = await Event.update({
+        name: req.body.eventName,
+        description: req.body.eventDescription,
+        date: req.body.eventDate,
+        capacity: req.body.participants,
+        venue: req.body.eventVenue,
+      },{
+      where: {
+        id: req.params.id
+      },
+    });
+      res.redirect("/destination")
+    } catch (error) {
+      // Handle database errors
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+})
 
 app.delete(
   "/events/:id",

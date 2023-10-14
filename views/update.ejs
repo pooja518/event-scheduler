@@ -13,7 +13,7 @@
 <body class="bg-purple-100 min-h-screen flex justify-center items-center">
     <div class="bg-white p-8 rounded shadow-md text-center">
         <h6 class="text-2xl font-bold text-purple-600 mb-6">Update Event</h6>
-        <form action="/updated" method="POST" class="flex flex-col items-start w-full max-w-md"> <!-- Use flex-col and items-start for column layout, and set a max-width -->
+        <form action="/updated/<%= id %>" method="POST" class="flex flex-col items-start w-full max-w-md"> <!-- Use flex-col and items-start for column layout, and set a max-width -->
             <input name="_csrf" type="hidden" value="<%= csrfToken %>">
             <div class="mb-4 flex flex-col sm:flex-row"> <!-- Flex container for each label-input pair with column layout on small screens and row layout on larger screens -->
                 <div class="flex-none w-36 mr-4 mb-2 sm:mb-0"> <!-- Fixed width for labels on larger screens -->
