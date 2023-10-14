@@ -134,6 +134,7 @@ app.get('/destination',connectEnsureLogin.ensureLoggedIn(), async (req, res) => 
     const otherEvents = await Event.fetchOtherEvents(userId)
     res.render('destination',{
       title: "Events",
+      userId: userId,
       userEvents: userEvents,
       otherEvents: otherEvents,
       csrfToken: req.csrfToken()
@@ -143,6 +144,15 @@ app.get('/destination',connectEnsureLogin.ensureLoggedIn(), async (req, res) => 
     console.log(err);
     return res.send("No events to display");
   }
+});
+
+app.get("/signout", (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
 });
 
 app.post("/users", async (req, res) => {
