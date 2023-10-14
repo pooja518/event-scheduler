@@ -40,6 +40,11 @@ module.exports = (sequelize, DataTypes) => {
     setCompletionStatus(status){
       return this.update({no_of_participants : status});
     }
+
+    deleteEvent(id){
+      return this.destroy({where: {id}})
+    }
+
   }
   Event.init({
     name: DataTypes.STRING,

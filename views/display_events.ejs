@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold"><%= data[i].name %></h2>
         <% if (data[i].userId == userId) { %>
-          <a class="bg-purple-200" href="#" onClick="redirectToEventForm(<%= data[i].id %>)">
+          <a class="bg-purple-200" href="#" onClick="deleteEvent(<%= data[i].id %>)">
             <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
