@@ -8,16 +8,40 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <script>
-        
+        function participate(eventId) {
+            var button = document.getElementById(`participateBtn${eventId}`);
+            if (button.textContent === 'Participate') {
+                fetch(`/destination/${eventId}/`, {
+                    method: "post",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        "_csrf": token
+                    })
+                })
+                .then((res) => {
+                    if (res.ok) {
+                    window.location.reload();
+                    }
+                })
+                .catch((err) => console.error(err));
+                button.textContent = 'Added';
+                button.classList.remove('bg-green-500', 'hover:bg-green-700');
+                button.classList.add('bg-gray-500', 'cursor-not-allowed');
+                button.disabled = true;
+            }
+        }
         function redirectToEventForm() {
             window.location.href = '/event';
         }
     </script>
   </head>
-  <body class="bg-gray-100">
+  <body class="bg-purple-100">
     <div class="flex flex-col items-center p-8">
-      <h1 class="text-3xl font-bold mb-6">All Events</h1>
-      <%- include('display_events',{ data: data}) %>
+      <div class="flex items-center mb-4">
+        <button onclick="redirectToEventForm()" class="bg-purple-500 text-white py-2 px-4 rounded text-sm hover:bg-purple-700">Add Event</button>
+      </div>
+      <%- include('display_events',{heading:"My Events", data: userEvents}) %>
+      <%- include('display_events',{heading:"Other Events", data: otherEvents}) %> 
     </div>
   </body>
 </html>

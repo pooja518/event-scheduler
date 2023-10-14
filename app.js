@@ -19,6 +19,7 @@ const flash = require("connect-flash");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
@@ -124,13 +125,17 @@ app.get("/event",connectEnsureLogin.ensureLoggedIn(),(req,res)=> {
   })
 })
 
-app.get('/destination', async (req, res) => {
+app.get('/destination',connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
   // Logic for the destination page goes here
   try{
-    const events = await Event.fetchAllEvents();
+    const userId = req.user.id
+    console.log(userId)
+    const userEvents = await Event.fetchUserEvents(userId);
+    const otherEvents = await Event.fetchOtherEvents(userId)
     res.render('destination',{
       title: "Events",
-      data: events,
+      userEvents: userEvents,
+      otherEvents: otherEvents,
       csrfToken: req.csrfToken()
     });
   }
@@ -174,7 +179,7 @@ app.post("/users", async (req, res) => {
       } else {
         req.flash("success", "sign up successfull");
       }
-      res.redirect("/event");
+      res.redirect("/destination");
     });
   } catch (err) {
     console.log(err);
@@ -190,7 +195,7 @@ app.post(
     failureFlash: true,
   }),
   (req, res) => {
-    res.redirect("/event");
+    res.redirect("/destination");
   }
 );
 
@@ -232,6 +237,20 @@ app.post('/create-event',connectEnsureLogin.ensureLoggedIn(), async (req, res) =
   }
 });
 
+app.post(
+  "/destination/:id/",
+  async (req, res) => {
+    const event = await Event.findByPk(req.params.id);
 
+    const status = event.no_of_participants;
+    try {
+      const updatedEvent = await event.setCompletionStatus(status+1);
+      return res.send(true);
+    } catch (error) {
+      console.log(error);
+      return res.status(422);
+    }
+  }
+);
 
 module.exports = app;

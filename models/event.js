@@ -2,6 +2,8 @@
 const {
   Model
 } = require('sequelize');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 module.exports = (sequelize, DataTypes) => {
   class Event extends Model {
     /**
@@ -15,10 +17,26 @@ module.exports = (sequelize, DataTypes) => {
       })
       // define association here
     }
-    static fetchAllEvents(){
-      const events = this.findAll()
+    static fetchUserEvents(EventId){
+      const events = this.findAll({
+        where:{
+          userId: EventId
+        }
+      })
       return events;
     }
+
+    static fetchOtherEvents(EventId){
+      const events = this.findAll({
+        where:{
+          userId: {
+            [Op.not]: EventId
+          }
+        }
+      })
+      return events;
+    }
+
     setCompletionStatus(status){
       return this.update({no_of_participants : status});
     }

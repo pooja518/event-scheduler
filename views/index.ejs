@@ -9,8 +9,8 @@
     <script src="https://cdn.tailwindcss.com">
     </script>
   </head>
-  <body class="bg-purple-50">
-    <div class="flex justify-center items-center h-screen mt-[-3rem]">
+  <body class="bg-purple-100">
+    <div class="flex justify-center rounded-lg items-center h-screen mt-[-3rem]">
       <div class="bg-white p-8 rounded-lg shadow-md text-center">
         <p class="text-2xl font-bold text-purple-600 mb-6 font-serif">
           Welcome to Event Scheduler
@@ -19,14 +19,14 @@
           Participate in exciting events or create your own and invite others to join!
         </p>
         <button id="destination"
-          class="bg-green-500 text-white rounded px-5 py-2 font-medium hover:bg-purple-600 focus:outline-none focus:ring focus:border-green-300">
+          class="bg-purple-500 text-white rounded px-5 py-2 font-medium hover:bg-purple-700 focus:outline-none focus:ring focus:border-green-300">
           Get Started!
         </button>
       </div>
     </div>
     <script>
       document.getElementById('destination').addEventListener('click', function() {
-      window.location.href = '/destination'; // Replace '/destination' with the actual route in your Express app
+      window.location.href = '/login'; // Replace '/destination' with the actual route in your Express app
     });
     </script>
   </body>
