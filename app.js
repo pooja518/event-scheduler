@@ -155,6 +155,31 @@ app.get("/signout", (req, res) => {
   });
 });
 
+app.get("/update/:id",connectEnsureLogin.ensureLoggedIn(), async(req,res)=> {
+  const EventId = req.params.id
+  const event = await Event.findByPk(EventId)
+  //console.log(event.date)
+  const rawDate = event.date // Replace this with your actual date object
+  const formattedDate = new Date(rawDate.getTime() - rawDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  try{
+    console.log(event.description,event.name,event.capacity,event.venue,event.date)
+    res.render('update',{
+      title: "Update Event",
+      name: event.name,
+      description: event.description,
+      capacity: event.capacity,
+      date: formattedDate,
+      venue: event.venue,
+      csrfToken: req.csrfToken()
+    })
+  }
+  catch(error){
+    console.log(error)
+    res.send(false)
+  }
+  
+})
+
 app.post("/users", async (req, res) => {
   if (req.body.firstName.length == 0) {
     req.flash("error", "Please fill the first name");
