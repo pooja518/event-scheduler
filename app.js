@@ -155,31 +155,37 @@ app.get("/signout", (req, res) => {
   });
 });
 
-app.get("/update/:id",connectEnsureLogin.ensureLoggedIn(), async(req,res)=> {
-  const EventId = req.params.id
-  const event = await Event.findByPk(EventId)
-  //console.log(event.date)
-  const rawDate = event.date // Replace this with your actual date object
-  const formattedDate = new Date(rawDate.getTime() - rawDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-  try{
-    //console.log(event.description,event.name,event.capacity,event.venue,event.date)
-    res.render('update',{
-      title: "Update Event",
-      id: event.id,
-      name: event.name,
-      description: event.description,
-      capacity: event.capacity,
-      date: formattedDate,
-      venue: event.venue,
-      csrfToken: req.csrfToken()
-    })
+app.get(
+  "/update/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const EventId = req.params.id;
+    const event = await Event.findByPk(EventId);
+    //console.log(event.date)
+    const rawDate = event.date; // Replace this with your actual date object
+    const formattedDate = new Date(
+      rawDate.getTime() - rawDate.getTimezoneOffset() * 60000
+    )
+      .toISOString()
+      .slice(0, 16);
+    try {
+      //console.log(event.description,event.name,event.capacity,event.venue,event.date)
+      res.render("update", {
+        title: "Update Event",
+        id: event.id,
+        name: event.name,
+        description: event.description,
+        capacity: event.capacity,
+        date: formattedDate,
+        venue: event.venue,
+        csrfToken: req.csrfToken(),
+      });
+    } catch (error) {
+      console.log(error);
+      res.send(false);
+    }
   }
-  catch(error){
-    console.log(error)
-    res.send(false)
-  }
-  
-})
+);
 
 app.post("/users", async (req, res) => {
   if (req.body.firstName.length == 0) {
@@ -290,8 +296,11 @@ app.post(
   }
 );
 
-app.post("/updated/:id",connectEnsureLogin.ensureLoggedIn(),async (req,res)=> {
-  const { eventName, eventDescription, eventDate, participants, eventVenue } =
+app.post(
+  "/updated/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const { eventName, eventDescription, eventDate, participants, eventVenue } =
       req.body;
     console.log(
       eventName,
@@ -312,26 +321,30 @@ app.post("/updated/:id",connectEnsureLogin.ensureLoggedIn(),async (req,res)=> {
       return res.redirect("/update");
     }
 
-      // Create a new event associated with the user
-      try{
-      const newEvent = await Event.update({
-        name: req.body.eventName,
-        description: req.body.eventDescription,
-        date: req.body.eventDate,
-        capacity: req.body.participants,
-        venue: req.body.eventVenue,
-      },{
-      where: {
-        id: req.params.id
-      },
-    });
-      res.redirect("/destination")
+    // Create a new event associated with the user
+    try {
+      const newEvent = await Event.update(
+        {
+          name: req.body.eventName,
+          description: req.body.eventDescription,
+          date: req.body.eventDate,
+          capacity: req.body.participants,
+          venue: req.body.eventVenue,
+        },
+        {
+          where: {
+            id: req.params.id,
+          },
+        }
+      );
+      res.redirect("/destination");
     } catch (error) {
       // Handle database errors
       console.error(error);
       res.status(500).json({ error: "Internal server error" });
     }
-})
+  }
+);
 
 app.delete(
   "/events/:id",
