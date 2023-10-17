@@ -16,6 +16,9 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'userId'
       })
       // define association here
+      Event.hasMany(models.Participant,{
+        foreignKey: 'eventId'
+      })
     }
     static fetchUserEvents(EventId){
       const events = this.findAll({
