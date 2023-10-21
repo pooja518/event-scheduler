@@ -19,6 +19,15 @@ const flash = require("connect-flash");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
+// Create a new Date object
+var todayDate = new Date();
+
+// Get the current date in YYYY-MM-DD format using toISOString() and substr()
+var today = todayDate.toISOString().substring(0, 10);
+
+
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
@@ -164,10 +173,8 @@ app.get(
     //console.log(event.date)
     const rawDate = event.date; // Replace this with your actual date object
     const formattedDate = new Date(
-      rawDate.getTime() - rawDate.getTimezoneOffset() * 60000
-    )
-      .toISOString()
-      .slice(0, 16);
+      rawDate.getTime() - rawDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    
     try {
       //console.log(event.description,event.name,event.capacity,event.venue,event.date)
       res.render("update", {
@@ -202,7 +209,7 @@ app.get("/participate/:id", connectEnsureLogin.ensureLoggedIn(), async (req, res
 
     if (existingParticipant) {
       // If participant already exists, send a response indicating that
-      return res.send('Already registered for this event')
+      return res.send('<h2>Already registered for this event</h2><a href="/destination">See other events</a>')
     }
 
     // If participant does not exist, create a new one
@@ -210,8 +217,12 @@ app.get("/participate/:id", connectEnsureLogin.ensureLoggedIn(), async (req, res
       eventId: eventId,
       userId: userId
     });
+    const event = await Event.findByPk(eventId)
+    await event.update({
+      no_of_participants: event.no_of_participants+1
+    })
 
-    return res.send('Succesfully registered for this event');
+    return res.send('<h2>Succesfully registered for this event</h2><a href="/destination">See other events</a>');
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -298,6 +309,10 @@ app.post(
       req.flash("error", "Fill all the details");
       return res.redirect("/event");
     }
+    if(eventDate < today){
+      req.flash("error", "Event date shouldn't be overdue!!");
+      return res.redirect("/event");
+    }
 
     try {
       // Check if the user exists
@@ -350,6 +365,10 @@ app.post(
     ) {
       req.flash("error", "Fill all the details");
       return res.redirect("/update");
+    }
+    if(eventDate < today){
+      req.flash("error", "Event date shouldn't be overdue!!");
+      return res.redirect("/event");
     }
 
     // Create a new event associated with the user

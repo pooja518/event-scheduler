@@ -1,8 +1,12 @@
-<h1 class="text-3xl font-bold mb-6"><%= heading %></h1>
-<% for(var i=0;i<data.length;i++) { %>
+<h1 class="text-3xl font-bold mb-6 underline"><%= heading %></h1>
+<% if(data.length == 0) { %>
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold">No events to display</h2>
+  </div>
+<% } for(var i=0;i<data.length;i++) { %>
   <div class="relative w-full max-w-lg bg-white shadow-md rounded-lg p-6 mb-4">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold"><%= data[i].name %></h2>
+      <h2 class="text-lg mb-2"><%= data[i].name %></h2>
       <div class="flex items-center">
         <!-- Wrap both buttons in a flex container -->
         <% if (data[i].userId == userId) { %>
