@@ -33,23 +33,6 @@
           .catch((err) => console.log(err));
       }
 
-      function addParticipant(eventId) {
-        console.log("Hello")
-          fetch(`participate/${eventId}/`, {
-            method: "put",
-            headers: { "Content-type": "application/json" },
-            body: JSON.stringify({
-              _csrf: token,
-            }),
-          })
-            .then((res) => {
-              if (res.ok) {
-                window.location.href = "/update";
-              }
-            })
-            .catch((err) => console.log(err));
-        }
-
       function redirectToEventForm(id) {
         window.location.href = "/event";
       }
