@@ -6,7 +6,7 @@ const path = require("path");
 var csrf = require("tiny-csrf");
 var cookeParser = require("cookie-parser");
 
-const { Event, User } = require("./models");
+const { Event, User, Participant } = require("./models");
 const cookieParser = require("cookie-parser");
 
 const passport = require("passport");
@@ -187,6 +187,37 @@ app.get(
   }
 );
 
+app.get("/participate/:id", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+  const eventId = req.params.id;
+  const userId = req.user.id;
+
+  try {
+    // Check if a participant with the given eventId and userId already exists
+    const existingParticipant = await Participant.findOne({
+      where: {
+        eventId: eventId,
+        userId: userId
+      }
+    });
+
+    if (existingParticipant) {
+      // If participant already exists, send a response indicating that
+      return res.send('Already registered for this event')
+    }
+
+    // If participant does not exist, create a new one
+    const newParticipant = await Participant.create({
+      eventId: eventId,
+      userId: userId
+    });
+
+    return res.send('Succesfully registered for this event');
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
 app.post("/users", async (req, res) => {
   if (req.body.firstName.length == 0) {
     req.flash("error", "Please fill the first name");
@@ -363,4 +394,8 @@ app.delete(
   }
 );
 
+
+
 module.exports = app;
+
+

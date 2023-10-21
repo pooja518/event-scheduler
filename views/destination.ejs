@@ -33,21 +33,22 @@
           .catch((err) => console.log(err));
       }
 
-      function updateEvent(id) {
-        fetch(`update/${id}/`, {
-          method: "get",
-          headers: {
-            "Content-type": "application/json",
-            "X-CSRF-Token": token,
-          },
-        })
-          .then((res) => {
-            if (res.ok) {
-              window.location.href = "/update";
-            }
+      function addParticipant(eventId) {
+        console.log("Hello")
+          fetch(`participate/${eventId}/`, {
+            method: "put",
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify({
+              _csrf: token,
+            }),
           })
-          .catch((err) => console.log(err));
-      }
+            .then((res) => {
+              if (res.ok) {
+                window.location.href = "/update";
+              }
+            })
+            .catch((err) => console.log(err));
+        }
 
       function redirectToEventForm(id) {
         window.location.href = "/event";
@@ -66,7 +67,9 @@
         </button>
       </div>
       <%- include('display_events',{heading:"My Events",userId: userId, data:
-      userEvents}) %> <%- include('display_events',{heading:"Other Events",userId: userId, data: otherEvents}) %>
+      userEvents}) %> <%-
+      include('display_events',{heading:"OtherEvents",userId: userId, data:
+      otherEvents}) %>
     </div>
   </body>
 </html>

@@ -7,7 +7,7 @@
         <!-- Wrap both buttons in a flex container -->
         <% if (data[i].userId == userId) { %>
         <a
-          class="bg-purple-300 p-1 rounded-lg flex items-center mr-2"
+          class="bg-purple-400 p-1 rounded-lg flex items-center mr-2"
           href="/update/<%= parseInt(data[i].id) %>"
         >
           <svg
@@ -27,7 +27,7 @@
           <span>Edit</span>
         </a>
         <a
-          class="bg-purple-300 p-1 rounded-lg flex items-center"
+          class="bg-purple-400 p-1 rounded-lg flex items-center"
           href="#"
           onClick="deleteEvent(<%= data[i].id %>)"
         >
@@ -46,6 +46,15 @@
             />
           </svg>
         </a>
+        <% } else { %>
+          <div class="flex items-center mb-4">
+            <a href="/participate/<%= parseInt(data[i].id) %>" class="text-black-700 bg-purple-400 p-1 rounded-lg flex items-center mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+              </svg>
+              <span>Participate</span>
+            </a>
+          </div>
         <% } %>
       </div>
     </div>
@@ -63,5 +72,5 @@
       Event Venue: <%= data[i].venue %>
     </p>
   </div>
-  <% } %>
+<% } %>
 
